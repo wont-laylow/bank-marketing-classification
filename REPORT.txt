@@ -1,0 +1,143 @@
+📊 Data Exploration & Model Insights Report
+
+1. Class Distribution
+A class imbalance was observed:
+The majority of customers did not subscribe to the offered product.
+
+This imbalance was visualized using a seaborn.countplot, confirming a skewed distribution of the target variable.
+
+
+2. Missing Values and Data Types
+No missing values were found in the dataset.
+
+Features were correctly identified using pandas.dtypes:
+
+Numerical features: e.g., duration, age, campaign
+
+Categorical features: e.g., job, marital, poutcome
+
+
+3. Correlation Analysis – Numerical Features
+A heatmap was generated to visualize correlations between numerical features.
+
+Correlation with the target (outcome) was computed using corrwith().
+
+🔹 Top Correlated Feature:
+duration showed the strongest positive correlation with subscription outcome.
+
+📌 Insight:
+
+Longer call durations correlate strongly with a higher likelihood of customer subscription. This implies that more engaged conversations may drive conversions.
+
+
+4. Categorical Feature Analysis
+Unique values and frequency distributions were explored for key categorical variables including:
+
+poutcome, job, marital, education, contact
+
+
+5. Chi-Square Test for Association
+A Chi-Square test was used to assess the statistical relationship between categorical variables and the subscription outcome:
+
+Feature	Chi² Score	p-value	Significance
+job	961.24	0.0000	Significant ✅
+marital	122.66	0.0000	Significant ✅
+education	193.11	0.0000	Significant ✅
+default	406.58	0.0000	Significant ✅
+housing	5.68	0.0583	Not significant ❌
+loan	1.09	0.5787	Not significant ❌
+contact	862.32	0.0000	Significant ✅
+month	3101.15	0.0000	Significant ✅
+day_of_week	26.14	0.0000	Significant ✅
+poutcome	4230.52	0.0000	Highly significant ✅✅
+
+📌 Insight:
+
+Many categorical features, particularly poutcome, contact, and month, show strong statistical association with the likelihood of subscription.
+
+✅ Final Selected Features
+
+*numerical features with the highest absolute correlation were selected.
+
+*Categorical features with significant Chi-Square p-values were retained.
+
+Weak predictors (e.g., loan, housing) were excluded from further modeling.
+
+
+🟦 Numerical Feature Distribution
+A boxplot analysis revealed that:
+
+duration and previous had notable outliers.
+
+Other features like nr.employed, euribor3m, and emp.var.rate were more stable.
+
+🔁 Log Transformation
+To address skewness:
+
+df['duration_log'] = np.log1p(df['duration'])
+df['previous_log'] = np.log1p(df['previous'])
+This transformation compressed extreme values and normalized the distribution.
+
+log1p() handled zero values gracefully by computing log(1 + x).
+
+
+
+🛠️ PREPROCESSING SUMMARY
+Feature Scaling and One-Hot Encoding were applied.
+
+Train-test split: 80% training, 20% test, stratified by target variable.
+
+Final input shape: 44 features per sample.
+
+
+🤖 Neural Network Classifier
+🔧 Architecture:
+Input Layer: 44 neurons
+
+Hidden Layers: 2 layers with ReLU activation
+
+Output Layer: 1 neuron with Sigmoid activation for binary classification
+
+Loss Function: BCELoss (Binary Cross-Entropy)
+
+Optimizer: Adam
+
+
+🌳 Random Forest Classifier
+🧰 Model Details:
+Library: Scikit-learn
+
+Model: RandomForestClassifier(n_estimators=100, random_state=42)
+
+Model Performance Metrics
+
+Neural Network
+Metric	                Value
+Accuracy	            0.8802
+Precision	            0.4810
+Recall	                0.8050
+F1 Score	            0.6022
+
+📌 Insight:
+The neural network achieved high recall, meaning it was effective in identifying most of the positive cases. However, its lower precision and F1 score indicate a higher rate of false positives.
+
+Random Forest
+Metric	                Value
+Accuracy	            0.9080
+Precision (class 1)	    0.59
+Recall (class 1)	    0.62
+F1 Score (class 1)	    0.60
+📌 Insight:
+The Random Forest model outperformed the neural network in overall accuracy and showed better balance between precision and recall for the minority class. It also performed much better on the majority class without sacrificing too much on class 1 (subscribers).
+
+
+
+🔍 Model Overview Comparison
+Metric	            Neural Network	                            Random Forest
+Training Time	     High	                                      Low
+Interpretability	Low	                                          High
+Handles Imbalance	Needs weighting	                              Robust
+Model Complexity	High	                                      Moderate
+
+Final Decision:
+The Random Forest classifier was chosen in the end
